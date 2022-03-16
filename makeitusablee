@@ -1,0 +1,156 @@
+#!/bin/bash
+#upgrade
+sudo pacman -Syyu;
+sudo pacman -S exa geany;
+#aliases
+cd /home/*/;
+echo "alias pacin='sudo pacman -S'
+alias xdd='poweroff'
+alias Xd='reboot'
+alias pacrm='sudo pacman -Rsc'
+alias pacup='sudo pacman -Syu'
+alias con='cd /home/*/.config/'
+alias h='cd /home/*/; ls'
+alias dw='cd /home/*/Stažené/; ls'
+alias dc='cd /home/*/Dokumenty/; ls'
+alias ls='exa -l --color=always --group-directories-first --icons'
+alias lsa='exa -al --color=always --group-directories-first --icons'
+alias la='exa -a --color=always --group-directories-first --icons'
+alias ll='exa -l --color=always --group-directories-first --icons'
+alias lt='exa -aT --color=always --group-directories-first --icons'
+alias l.='exa -a | egrep '
+" >> .bashrc;
+
+while true; do
+    read -p "Hide grub? [y/n]" yn
+    case $yn in
+        [Yy]* ) 
+        
+        echo 'GRUB_FORCE_HIDDEN_MENU="true"' | sudo tee -a /etc/default/grub > /dev/null;
+        echo '
+        #! /bin/sh
+set -e
+prefix="/usr"
+exec_prefix="${prefix}"
+datarootdir="${prefix}/share"
+export TEXTDOMAIN=grub
+export TEXTDOMAINDIR="${datarootdir}/locale"
+source "${datarootdir}/grub/grub-mkconfig_lib"
+found_other_os=
+make_timeout () {
+  if [ "x${GRUB_FORCE_HIDDEN_MENU}" = "xtrue" ] ; then 
+    if [ "x${1}" != "x" ] ; then
+      if [ "x${GRUB_HIDDEN_TIMEOUT_QUIET}" = "xtrue" ] ; then
+    verbose=
+      else
+    verbose=" --verbose"
+      fi
+      if [ "x${1}" = "x0" ] ; then
+    cat <<EOF
+if [ "x\${timeout}" != "x-1" ]; then
+  if keystatus; then
+    if keystatus --shift; then
+      set timeout=-1
+    else
+      set timeout=0
+    fi
+  else
+    if sleep$verbose --interruptible 3 ; then
+      set timeout=0
+    fi
+  fi
+fi
+EOF
+      else
+    cat << EOF
+if [ "x\${timeout}" != "x-1" ]; then
+  if sleep$verbose --interruptible ${GRUB_HIDDEN_TIMEOUT} ; then
+    set timeout=0
+  fi
+fi
+EOF
+      fi
+    fi
+  fi
+}
+adjust_timeout () {
+  if [ "x$GRUB_BUTTON_CMOS_ADDRESS" != "x" ]; then
+    cat <<EOF
+if cmostest $GRUB_BUTTON_CMOS_ADDRESS ; then
+EOF
+    make_timeout "${GRUB_HIDDEN_TIMEOUT_BUTTON}" "${GRUB_TIMEOUT_BUTTON}"
+    echo else
+    make_timeout "${GRUB_HIDDEN_TIMEOUT}" "${GRUB_TIMEOUT}"
+    echo fi
+  else
+    make_timeout "${GRUB_HIDDEN_TIMEOUT}" "${GRUB_TIMEOUT}"
+  fi
+}
+  adjust_timeout
+    cat <<EOF
+if [ "x\${timeout}" != "x-1" ]; then
+  if keystatus; then
+    if keystatus --shift; then
+      set timeout=-1
+    else
+      set timeout=0
+    fi
+  else
+    if sleep$verbose --interruptible 3 ; then
+      set timeout=0
+    fi
+  fi
+fi
+EOF
+        '  | sudo tee -a /etc/grub.d/31_hold_shift > /dev/null; 
+        sudo chmod a+x /etc/grub.d/31_hold_shift;
+        sudo grub-mkconfig -o /boot/grub/grub.cfg; break;;
+        [Nn]* ) break;;
+        * ) echo "yes or no";;
+    esac
+done
+
+
+while true; do
+    read -p "Dunn! Cutefish? [y/n]" yn
+    case $yn in
+        [Yy]* ) 
+        echo "#%PAM-1.0
+auth      required   pam_unix.so
+account   required   pam_unix.so
+password  required   pam_unix.so
+session   required   pam_unix.so" | sudo tee /etc/pam.d/other; break;;
+        [Nn]* ) break;;
+        * ) echo "yes or no";;
+    esac
+done
+
+
+
+
+
+
+
+
+
+
+
+while true; do
+    read -p "Dunn! Reboot? [y/n]" yn
+    case $yn in
+        [Yy]* ) reboot; break;;
+        [Nn]* ) break;;
+        * ) echo "yes or no";;
+    esac
+done
+
+
+
+
+
+
+
+
+
+
+echo "Dunn!"
