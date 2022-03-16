@@ -119,7 +119,10 @@ while true; do
 auth      required   pam_unix.so
 account   required   pam_unix.so
 password  required   pam_unix.so
-session   required   pam_unix.so" | sudo tee /etc/pam.d/other; break;;
+session   required   pam_unix.so" | sudo tee /etc/pam.d/other;
+cd /home/*/Stažené;
+sudo ln -s /usr/share/backgrounds/cutefishos /home/$1/Stažené/tapety;
+sudo chmod a+w tapety; break;;
         [Nn]* ) break;;
         * ) echo "yes or no";;
     esac
